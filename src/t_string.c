@@ -329,6 +329,15 @@ void getCommand(client *c) {
     getGenericCommand(c);
 }
 
+void getFirst(client *c) {
+    robj *o;
+    if((o = getFirst(c->db, LOOKUP_NONE)) == NULL) {
+        return C_OK;
+    }
+    addReplyBulk(c, o);
+    return C_OK;
+}
+
 /*
  * GETEX <key> [PERSIST][EX seconds][PX milliseconds][EXAT seconds-timestamp][PXAT milliseconds-timestamp]
  *
