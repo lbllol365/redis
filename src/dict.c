@@ -527,6 +527,20 @@ dictEntry *dictFind(dict *d, const void *key)
     return NULL;
 }
 
+static dictEntry *dictGetFirst(dict *ht) {
+    dictEntry *entry;
+    if(dictSize(ht) == 0) {
+        return NULL;
+    }
+    for(int table = 0;table <= 1;table++) {
+        entry = ht->ht_table[table][0];
+        if(entry) {
+            return entry;
+        }
+    }
+    return NULL;
+}
+
 void *dictFetchValue(dict *d, const void *key) {
     dictEntry *he;
 

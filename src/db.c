@@ -125,6 +125,34 @@ robj *lookupKey(redisDb *db, robj *key, int flags) {
     return val;
 }
 
+
+robj *getFirst(redisDb *db, int flag) {
+    dictEntry *entry = dictGetFirst(db->dict);
+    robj *val = NULL;
+    if(entry) {
+        val = dictGetVal(entry);
+        int isRoReplica = server.masterhost && server.repl_slave_ro;
+        int forceDeleteExpired = flag & LOOKUP_WRITE & !isRoReplica;
+        if(expireIfNeeded(db, dictGetKey(entry), forceDeleteExpired)) {
+            val = NULL;
+        }
+    }
+
+    if(val) {
+        if(!hasActiveChildProcess() && !(flag & LOOKUP_NOTOUCH)) {
+            if(server.maxmemory_policy & MAXMEMORY_FLAG_LFU) {
+                updateLFU(val);
+            } else {
+                val->lru = LRU_CLOCK();
+            }
+        }
+        if(!(flag & (LOOKUP_NOSTATS | LOOKUP_WRITE))) {
+            server.stat_keyspace_hits++;
+        }
+    }
+    return val;
+}
+
 /* Lookup a key for read operations, or return NULL if the key is not found
  * in the specified DB.
  *
