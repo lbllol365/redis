@@ -329,7 +329,7 @@ void getCommand(client *c) {
     getGenericCommand(c);
 }
 
-void getFirst(client *c) {
+void getFirstCommand(client *c) {
     robj *o;
     if((o = getFirst(c->db, LOOKUP_NONE)) == NULL) {
         return C_OK;
