@@ -527,7 +527,7 @@ dictEntry *dictFind(dict *d, const void *key)
     return NULL;
 }
 
-static dictEntry *dictGetFirst(dict *ht) {
+dictEntry *dictGetFirst(dict *ht) {
     dictEntry *entry;
     if(dictSize(ht) == 0) {
         return NULL;
